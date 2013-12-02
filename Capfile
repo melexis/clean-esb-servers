@@ -31,7 +31,6 @@ namespace :karaf do
       # kill all karaf processes on the server
       procs = list_processes
       karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
-      puts "Found the following processes #{karaf_procs}"
       karaf_procs.each do |p|
         as :root do
           execute(:kill, p[:pid])
