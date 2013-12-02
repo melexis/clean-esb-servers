@@ -3,9 +3,10 @@ require 'sshkit'
 
 SSHKit.config.command_map =
     {
-        :ps     => '/bin/ps',
-        :kill   => 'kill',
-        :karaf  => '/usr/share/apache-servicemix/bin/start'
+        :ps         => '/bin/ps',
+        :kill       => 'kill',
+        :karaf      => '/usr/share/apache-servicemix/bin/start',
+        :cfagent    => '/usr/sbin/cfagent'
     }
 
 def list_processes
