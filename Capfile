@@ -25,6 +25,16 @@ def list_processes
     matches
 end
 
+namespace :cfengine do
+  task :run do
+    on roles(:esb) do
+      as :root do
+        execute(:cfagent, '-q')
+      end
+    end
+  end
+end
+
 namespace :karaf do
   task :stop do
     on roles(:esb) do
@@ -41,6 +51,7 @@ namespace :karaf do
 
   task :clean do
     invoke('karaf:stop')
+    invoke('cfengine:run')
     on roles(:esb) do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start clean\'')
