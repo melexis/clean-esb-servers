@@ -57,8 +57,8 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start clean\'')
       end
-      puts "Sleeping for 20 secs to allow servicemix to start."
-      sleep 20
+      puts "Sleeping for 40 secs to allow servicemix to start."
+      sleep 40
     end
   end
 end
