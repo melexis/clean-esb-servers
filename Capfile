@@ -5,7 +5,7 @@ require 'sshkit'
 SSHKit.config.command_map =
     {
         :ps         => '/bin/ps',
-        :kill       => 'kill',
+        :kill       => 'kill -9',
         :karaf      => '/usr/share/apache-servicemix/bin/start',
         :stopsmx    => '/usr/share/apache-servicemix/bin/stop; true;',
         :sleep      => 'sleep',
