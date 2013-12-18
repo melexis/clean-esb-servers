@@ -69,7 +69,7 @@ namespace :karaf do
 
     invoke('karaf:forcestop')
     invoke('cfengine:run')
-    invoke('karaf:start')
+    invoke('karaf:startclean')
     invoke('karaf:stop')
 
     # wait 30 seconds to allow smx to shutdown
@@ -81,7 +81,7 @@ namespace :karaf do
     invoke('karaf:start')
   end
 
-  task :start do
+  task :startclean do
     on roles(:esb) do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start clean\'')
@@ -90,5 +90,16 @@ namespace :karaf do
       sleep 40
     end
   end
+
+  task :start do
+    on roles(:esb) do
+      as "smx-fuse" do
+        execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start\'')
+      end
+      puts "Sleeping for 40 secs to allow servicemix to start."
+      sleep 40
+    end
+  end
+
 end
 
