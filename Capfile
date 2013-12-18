@@ -43,7 +43,7 @@ namespace :karaf do
   task :stop do
     on roles(:esb) do
       # stop servicemix
-      as :root do
+      as "smx-fuse" do
         execute(:stopsmx)
       end
     end
@@ -54,7 +54,7 @@ namespace :karaf do
     procs = list_processes
     karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
     karaf_procs.each do |p|
-      as :root do
+      as "smx-fuse" do
           execute(:kill, p[:pid])
       end
     end      
