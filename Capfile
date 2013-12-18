@@ -51,13 +51,15 @@ namespace :karaf do
 
   task :forcestop do
     # kill all remaining karaf processes on the server
-    procs = list_processes
-    karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
-    karaf_procs.each do |p|
-      as "smx-fuse" do
+    on roles(:esb) do
+      procs = list_processes
+      karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
+      karaf_procs.each do |p|
+        as "smx-fuse" do
           execute(:kill, p[:pid])
-      end
-    end      
+        end
+      end    
+    end
   end
   
   task :clean do
