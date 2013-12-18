@@ -7,7 +7,7 @@ SSHKit.config.command_map =
         :ps         => '/bin/ps',
         :kill       => 'kill',
         :karaf      => '/usr/share/apache-servicemix/bin/start',
-        :stopsmx    => '/usr/share/apache-servicemix/bin/stop &> /dev/null',
+        :stopsmx    => '/usr/share/apache-servicemix/bin/stop',
         :sleep      => 'sleep',
         :cfagent    => '/usr/sbin/cfagent'
     }
@@ -64,9 +64,11 @@ namespace :karaf do
     invoke('karaf:stop')
 
     # wait 360 seconds to allow smx to shutdown
-    as "smx-fuse" do
-      execute(:sleep, '360')
-    end    
+    on roles(:esb) do
+      as "smx-fuse" do
+        execute(:sleep, '360')
+      end    
+    end
 
     invoke('karaf:forcestop')
     invoke('cfengine:run')
@@ -74,9 +76,11 @@ namespace :karaf do
     invoke('karaf:stop')
 
     # wait 30 seconds to allow smx to shutdown
-    as "smx-fuse" do
-      execute(:sleep, '30')
-    end        
+    on roles(:esb) do 
+      as "smx-fuse" do
+        execute(:sleep, '30')
+      end        
+    end
     
     invoke('karaf:forcestop')
     invoke('karaf:start')
