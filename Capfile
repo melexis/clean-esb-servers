@@ -6,6 +6,8 @@ SSHKit.config.command_map =
         :ps         => '/bin/ps',
         :kill       => 'kill',
         :karaf      => '/usr/share/apache-servicemix/bin/start',
+        :stopsmx    => '/usr/share/apache-servicemix/bin/stop',
+        :sleep      => 'sleep',
         :cfagent    => '/usr/sbin/cfagent'
     }
 
@@ -39,7 +41,17 @@ end
 namespace :karaf do
   task :stop do
     on roles(:esb) do
-      # kill all karaf processes on the server
+      # stop servicemix
+      as :root do
+        execute(:stopsmx)
+      end
+
+      # wait 60 seconds to allow smx to shutdown
+      as "smx-fuse" do
+        execute(:sleep, '60')
+      end
+
+      # kill all remaining karaf processes on the server
       procs = list_processes
       karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
       karaf_procs.each do |p|
