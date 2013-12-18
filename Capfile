@@ -46,9 +46,9 @@ namespace :karaf do
         execute(:stopsmx)
       end
 
-      # wait 60 seconds to allow smx to shutdown
+      # wait 360 seconds to allow smx to shutdown
       as "smx-fuse" do
-        execute(:sleep, '60')
+        execute(:sleep, '360')
       end
 
       # kill all remaining karaf processes on the server
