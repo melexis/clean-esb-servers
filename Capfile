@@ -45,26 +45,43 @@ namespace :karaf do
       as :root do
         execute(:stopsmx)
       end
-
-      # wait 360 seconds to allow smx to shutdown
-      as "smx-fuse" do
-        execute(:sleep, '360')
-      end
-
-      # kill all remaining karaf processes on the server
-      procs = list_processes
-      karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
-      karaf_procs.each do |p|
-        as :root do
-          execute(:kill, p[:pid])
-        end
-      end
     end
   end
 
+  task :forcestop do
+    # kill all remaining karaf processes on the server
+    procs = list_processes
+    karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
+    karaf_procs.each do |p|
+      as :root do
+          execute(:kill, p[:pid])
+      end
+    end      
+  end
+  
   task :clean do
     invoke('karaf:stop')
+
+    # wait 360 seconds to allow smx to shutdown
+    as "smx-fuse" do
+      execute(:sleep, '360')
+    end    
+
+    invoke('karaf:forcestop')
     invoke('cfengine:run')
+    invoke('karaf:start')
+    invoke('karaf:stop')
+
+    # wait 30 seconds to allow smx to shutdown
+    as "smx-fuse" do
+      execute(:sleep, '30')
+    end        
+    
+    invoke('karaf:forcestop')
+    invoke('karaf:start')
+  end
+
+  task :start do
     on roles(:esb) do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start clean\'')
