@@ -1,3 +1,4 @@
+
 require 'capistrano/setup'
 require 'sshkit'
 
@@ -6,7 +7,7 @@ SSHKit.config.command_map =
         :ps         => '/bin/ps',
         :kill       => 'kill',
         :karaf      => '/usr/share/apache-servicemix/bin/start',
-        :stopsmx    => '/usr/share/apache-servicemix/bin/stop',
+        :stopsmx    => '/usr/share/apache-servicemix/bin/stop &> /dev/null',
         :sleep      => 'sleep',
         :cfagent    => '/usr/sbin/cfagent'
     }
