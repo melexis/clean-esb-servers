@@ -29,6 +29,38 @@ def list_processes
     matches
 end
 
+def force_stop
+  # kill all remaining karaf processes on the server
+  on roles(:esb) do
+    procs = list_processes
+    karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
+    karaf_procs.each do |p|
+      as "smx-fuse" do
+        execute(:kill, p[:pid])
+      end
+    end    
+  end
+end
+
+def karaf_stop (sleeptime)
+  # stop servicemix
+  on roles(:esb) do
+    as "smx-fuse" do
+      execute(:stopsmx)
+    end
+  end
+  # wait for 360 seconds
+  sleep sleeptime
+end
+
+def sleep (time)
+  on roles(:esb) do
+    as "smx-fuse" do
+      execute(:sleep, time)
+    end    
+  end
+end
+
 namespace :cfengine do
   task :run do
     on roles(:esb) do
@@ -39,52 +71,15 @@ namespace :cfengine do
   end
 end
 
-namespace :karaf do
-  task :stop do
-    on roles(:esb) do
-      # stop servicemix
-      as "smx-fuse" do
-        execute(:stopsmx)
-      end
-    end
-  end
-
-  task :forcestop do
-    # kill all remaining karaf processes on the server
-    on roles(:esb) do
-      procs = list_processes
-      karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
-      karaf_procs.each do |p|
-        as "smx-fuse" do
-          execute(:kill, p[:pid])
-        end
-      end    
-    end
-  end
-  
+namespace :karaf do 
   task :clean do
-    invoke('karaf:stop')
-
-    # wait 360 seconds to allow smx to shutdown
-    on roles(:esb) do
-      as "smx-fuse" do
-        execute(:sleep, '360')
-      end    
-    end
-
-    invoke('karaf:forcestop')
+    karaf_stop 360
+    force_stop
     invoke('cfengine:run')
     invoke('karaf:startclean')
-    invoke('karaf:stop')
-
-    # wait 30 seconds to allow smx to shutdown
-    on roles(:esb) do 
-      as "smx-fuse" do
-        execute(:sleep, '30')
-      end        
-    end
-    
-    invoke('karaf:forcestop')
+    karaf_stop 30
+    puts "Stop and start again"
+    force_stop
     invoke('karaf:start')
   end
 
