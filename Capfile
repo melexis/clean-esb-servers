@@ -75,7 +75,7 @@ namespace :karaf do
   task :clean do
     karaf_stop 360
     force_stop
-    invoke('cfengine:run')
+#    invoke('cfengine:run')
     invoke('karaf:startclean')
     karaf_stop 30
     puts "Stop and start again"
