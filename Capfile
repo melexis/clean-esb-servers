@@ -71,7 +71,7 @@ end
 namespace :karaf do 
   task :clean do
     force_stop
-    invoke('karaf:start')
+    invoke('karaf:startclean')
   end
 
   task :startclean do
