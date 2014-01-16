@@ -1,0 +1,16 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:osgi="http://www.springframework.org/schema/osgi"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+
+  <bean id="rtwm-ds" class="org.apache.commons.dbcp.BasicDataSource">
+    <property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+    <property name="url" value="jdbc:oracle:thin:@oracle.tess.elex.be:1521:orcl" />
+    <property name="username" value="lazar" />
+    <property name="password" value="secret" />
+  </bean>
+  <osgi:service ref="rtwm-ds" interface="javax.sql.DataSource"/>
+</beans>
+

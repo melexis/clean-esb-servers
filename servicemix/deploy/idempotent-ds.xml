@@ -1,0 +1,15 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:osgi="http://www.springframework.org/schema/osgi"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+  <bean id="idempotentds" class="org.apache.commons.dbcp.BasicDataSource">
+    <property name="driverClassName" value="org.postgresql.Driver" />
+    <property name="url" value="jdbc:postgresql://postgresql-test.colo.elex.be/partner" />
+    <property name="username" value="jboss" />
+    <property name="password" value="jboss" />
+  </bean>
+  <osgi:service ref="idempotentds" interface="javax.sql.DataSource"/>
+</beans>
+

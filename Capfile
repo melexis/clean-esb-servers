@@ -1,16 +1,16 @@
-
 require 'capistrano/setup'
+require 'capistrano-karaf'
 require 'sshkit'
 
-SSHKit.config.command_map =
-    {
-        :ps         => '/bin/ps',
-        :kill       => 'kill -9',
-        :karaf      => '/usr/share/apache-servicemix/bin/start',
-        :stopsmx    => '/usr/share/apache-servicemix/bin/stop; true;',
-        :sleep      => 'sleep',
-        :cfagent    => '/usr/sbin/cfagent'
-    }
+SSHKit.config.command_map[:ps] = '/bin/ps'
+SSHKit.config.command_map[:kill] = 'kill -9'
+SSHKit.config.command_map[:karaf] = '/usr/share/apache-servicemix/bin/start'
+SSHKit.config.command_map[:stopsmx] = '/usr/share/apache-servicemix/bin/stop; true;'
+SSHKit.config.command_map[:sleep] = 'sleep'
+SSHKit.config.command_map[:cfagent] = '/usr/sbin/cfagent'
+SSHKit.config.command_map[:tail_100] = '/usr/bin/tail -100 /usr/share/apache-servicemix/data/log/server.log'
+
+@failed_hostname = nil
 
 def list_processes
     matches = []
@@ -32,13 +32,18 @@ end
 def force_stop
   # kill all remaining karaf processes on the server
   on roles(:esb) do
-    procs = list_processes
-    karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
-    karaf_procs.each do |p|
-      as "smx-fuse" do
-        execute(:kill, p[:pid])
+    begin 
+      procs = list_processes
+      karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
+      karaf_procs.each do |p|
+        as "smx-fuse" do
+          execute(:kill, p[:pid])
+        end
       end
-    end    
+    rescue Exception => e
+      puts "#{host.hostname} got exception #{e.message}"
+      raise e
+    end
   end
 end
 
@@ -73,12 +78,6 @@ end
 
 namespace :karaf do 
   task :clean do
-    karaf_stop 360
-    force_stop
-#    invoke('cfengine:run')
-    invoke('karaf:startclean')
-    karaf_stop 30
-    puts "Stop and start again"
     force_stop
     invoke('karaf:start')
   end
@@ -103,5 +102,81 @@ namespace :karaf do
     end
   end
 
+  task :install_eventstore do
+    on roles(:karaf) do
+      begin
+        add_url "mvn:com.melexis.esb/eventstore-feature/1.3-SNAPSHOT/xml/features"
+        feature_install "eventstore-service"
+      rescue Exception => e
+        puts "#{host.hostname} got exception #{e.message}"
+        invoke 'karaf:print_log_files'
+        raise e
+      end
+    end
+  end
+
+  task :install_platform do
+    on roles(:karaf) do
+      begin
+        add_url "mvn:com.melexis.repository/ewafermap-repo/2.19.1/xml/features"
+        feature_install "ewafermap-platform"
+      rescue Exception => e
+        puts "#{host.hostname} got exception #{e.message}"
+        invoke 'karaf:print_log_files'
+        raise e
+      end
+    end
+  end
+
+  task :install_ape do
+    on roles(:karaf) do
+      begin
+        add_url "mvn:com.melexis.ape/rasco-feature/1.25-SNAPSHOT/xml/features"
+        feature_install "rasco"
+        feature_install "rasco-libs"
+        feature_install "rasco-svcs"
+      rescue Exception => e
+        puts "#{host.hostname} got exception #{e.message}"
+        invoke 'karaf:print_log_files'
+        raise e
+      end
+    end
+  end
+
+  task :install_taskrow do
+    on roles(:karaf) do
+      begin
+        add_url "mvn:com.melexis.repository/exception-handling-repo/2.18.0/xml/features"
+        add_url "mvn:com.melexis.repository/taskrow-repo/1.0.1-SNAPSHOT/xml/features"
+        feature_install "taskrow"
+      rescue Exception => e
+        puts "#{host.hostname} got exception #{e.message}"
+        invoke 'karaf:print_log_files'
+        raise e
+      end
+    end
+  end
+
+  task :verify do
+    on roles(:karaf) do
+      begin
+        spring_osgi_extender = list_bundles.find {|b| b[:name] == 'spring-osgi-extender'}
+        raise RuntimeError unless spring_osgi_extender[:status] == 'Active' || spring_osgi_extender[:status] == 'Resolved'
+        puts "#{host.hostname}: ok"
+      rescue Exception => e
+        puts "#{host.hostname} got exception #{e.message}"
+        invoke 'karaf:print_log_files'
+        raise e
+      end
+    end
+  end
+
+  task :print_log_files do
+    on roles(:esb) do
+      last_lines = capture(:tail_100)
+      puts last_lines.lines.map {|l| "#{host.hostname}: l"}.join("\n")
+    end
+  end
 end
 
+before "karaf:install_platform", "karaf:install_eventstore"
