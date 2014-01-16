@@ -6,7 +6,6 @@ SSHKit.config.command_map[:ps] = '/bin/ps'
 SSHKit.config.command_map[:kill] = 'kill -9'
 SSHKit.config.command_map[:karaf] = '/usr/share/apache-servicemix/bin/start'
 SSHKit.config.command_map[:stopsmx] = '/usr/share/apache-servicemix/bin/stop; true;'
-SSHKit.config.command_map[:sleep] = 'sleep'
 SSHKit.config.command_map[:cfagent] = '/usr/sbin/cfagent'
 SSHKit.config.command_map[:tail_100] = '/usr/bin/tail -100 /usr/share/apache-servicemix/data/log/server.log'
 
@@ -70,8 +69,13 @@ end
 
 namespace :karaf do 
   task :clean do
+    karaf_stop 30
     force_stop
     invoke('karaf:startclean')
+    karaf_stop 30
+    puts "Stop and start again"
+    force_stop
+    invoke('karaf:start')
   end
 
   task :startclean do
