@@ -58,14 +58,6 @@ def karaf_stop (sleeptime)
   sleep sleeptime
 end
 
-def sleep (time)
-  on roles(:esb) do
-    as "smx-fuse" do
-      execute(:sleep, time)
-    end    
-  end
-end
-
 namespace :cfengine do
   task :run do
     on roles(:esb) do
