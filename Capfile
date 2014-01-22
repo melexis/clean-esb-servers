@@ -72,7 +72,7 @@ namespace :karaf do
     karaf_stop 30
     force_stop
     invoke('karaf:startclean')
-    karaf_stop 30
+    karaf_stop 60
     puts "Stop and start again"
     force_stop
     invoke('karaf:start')
