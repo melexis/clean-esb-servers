@@ -46,15 +46,29 @@ def force_stop
   end
 end
 
-def karaf_stop (sleeptime)
+def karaf_stop (sleeptime = 10)
   # stop servicemix
   on roles(:esb) do
     as "smx-fuse" do
       execute(:stopsmx)
     end
-  end
-  # wait for 360 seconds
+  end  
   sleep sleeptime
+  force_stop
+end
+
+def wait_for_smx_to_start
+  # wait until all bundles are started and spring context is loaded"
+  sleep 20
+
+  on roles(:karaf) do
+    puts "Wait until servicemix is completely started."
+    wait_for_all_bundles (timeout=180) {|b| ["Active", "Resolved"].include? b["status"]}
+    wait_for_bundle (timeout=180) do |b| 
+      b["name"] == "Apache CXF Bundle Jar" and b["context"] == 'Started'        
+    end
+    puts "servicemix is completely started."
+  end
 end
 
 namespace :cfengine do
@@ -69,12 +83,10 @@ end
 
 namespace :karaf do 
   task :clean do
-    karaf_stop 30
-    force_stop
+    karaf_stop
     invoke('karaf:startclean')
-    karaf_stop 60
     puts "Stop and start again"
-    force_stop
+    karaf_stop
     invoke('karaf:start')
   end
 
@@ -83,9 +95,8 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start clean\'')
       end
-      puts "Sleeping for 40 secs to allow servicemix to start."
-      sleep 40
     end
+    wait_for_smx_to_start
   end
 
   task :start do
@@ -93,9 +104,8 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start\'')
       end
-      puts "Sleeping for 40 secs to allow servicemix to start."
-      sleep 40
     end
+    wait_for_smx_to_start
   end
 
   task :install_eventstore do
