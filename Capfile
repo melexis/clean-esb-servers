@@ -2,7 +2,7 @@ require 'capistrano/setup'
 require 'capistrano-karaf'
 require 'sshkit'
 
-smx_console = "sshpass -p smx ssh -t -oStrictHostKeyChecking=no smx@localhost -t -p 8101 "
+smx_console = "sshpass -p smx ssh -oStrictHostKeyChecking=no smx@localhost -p 8101 "
 
 # TODO: find another method to execute these commands in the remote smx-console
 SSHKit.config.command_map[:features_addurl] = smx_console + 'features:addurl'
@@ -111,7 +111,8 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start clean\'')
       end
-      wait_for_smx_to_start      
+#      wait_for_smx_to_start      
+	sleep 20
     end
   end
 
@@ -121,7 +122,8 @@ namespace :karaf do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start\'')
       end
     end
-    wait_for_smx_to_start
+#    wait_for_smx_to_start
+	sleep 20
   end
 
   task :install_eventstore do
@@ -201,5 +203,5 @@ namespace :karaf do
   end
 end
 
-before "karaf:clean", "cfengine:run"
+#before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
