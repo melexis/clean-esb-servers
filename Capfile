@@ -13,7 +13,7 @@ SSHKit.config.command_map[:features_uninstall] = smx_console + 'features:uninsta
 SSHKit.config.command_map[:features_list] = smx_console + 'features:list'
 SSHKit.config.command_map[:features_info] = smx_console + 'features:info'
 SSHKit.config.command_map[:headers] = smx_console + 'headers'
-SSHKit.config.command_map[:list] = smx_console + "osgi:list"
+SSHKit.config.command_map[:list] = smx_console + 'osgi:list'
 SSHKit.config.command_map[:log_set] = smx_console + 'log:set'
 SSHKit.config.command_map[:stop] = smx_console + 'osgi:stop'
 SSHKit.config.command_map[:start] = smx_console + 'osgi:start'
@@ -111,8 +111,7 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start clean\'')
       end
-#      wait_for_smx_to_start      
-	sleep 60
+      wait_for_smx_to_start      
     end
   end
 
@@ -122,8 +121,7 @@ namespace :karaf do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start\'')
       end
     end
-#    wait_for_smx_to_start
-	sleep 60
+    wait_for_smx_to_start
   end
 
   task :install_eventstore do
