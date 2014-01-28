@@ -81,8 +81,8 @@ def wait_for_smx_to_start
   sleep 20
 
   on roles(:esb) do
-    wait_for_all_bundles (timeout=180) {|b| ["Active", "Resolved", "Installed"].include? b["status"]}
-    wait_for_bundle (timeout=180) do |b| 
+    wait_for_all_bundles timeout=180, sleeptime=10 do |b| ["Active", "Resolved", "Installed"].include? b["status"] end
+    wait_for_bundle timeout=180, sleeptime=10 do |b| 
       b["name"] == "Apache CXF Bundle Jar" and b["context"] == 'Started'              
     end
   end
