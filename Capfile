@@ -2,6 +2,23 @@ require 'capistrano/setup'
 require 'capistrano-karaf'
 require 'sshkit'
 
+smx_console = "sshpass -p smx ssh -oStrictHostKeyChecking=no smx@localhost -p 8101 "
+
+# TODO: find another method to execute these commands in the remote smx-console
+SSHKit.config.command_map[:features_addurl] = smx_console + 'features:addurl'
+SSHKit.config.command_map[:features_removeurl] = smx_console + 'features:removeurl'
+SSHKit.config.command_map[:features_refreshurl] = smx_console + 'features:refreshurl'
+SSHKit.config.command_map[:features_install] = smx_console + 'features:install'
+SSHKit.config.command_map[:features_uninstall] = smx_console + 'features:uninstall'
+SSHKit.config.command_map[:features_list] = smx_console + 'features:list'
+SSHKit.config.command_map[:features_info] = smx_console + 'features:info'
+SSHKit.config.command_map[:headers] = smx_console + 'headers'
+SSHKit.config.command_map[:list] = smx_console + "osgi:list"
+SSHKit.config.command_map[:log_set] = smx_console + 'log:set'
+SSHKit.config.command_map[:stop] = smx_console + 'osgi:stop'
+SSHKit.config.command_map[:start] = smx_console + 'osgi:start'
+
+
 SSHKit.config.command_map[:ps] = '/bin/ps'
 SSHKit.config.command_map[:kill] = 'kill -9'
 SSHKit.config.command_map[:karaf] = '/usr/share/apache-servicemix/bin/start'
@@ -9,7 +26,9 @@ SSHKit.config.command_map[:stopsmx] = '/usr/share/apache-servicemix/bin/stop; tr
 SSHKit.config.command_map[:cfagent] = '/usr/sbin/cfagent'
 SSHKit.config.command_map[:tail_100] = '/usr/bin/tail -100 /usr/share/apache-servicemix/data/log/server.log'
 
+
 @failed_hostname = nil
+
 
 def list_processes
     matches = []
@@ -24,7 +43,7 @@ def list_processes
                             :command  => m['COMMAND']
                          })
         end
-    end
+     end
     matches
 end
 
@@ -61,13 +80,11 @@ def wait_for_smx_to_start
   # wait until all bundles are started and spring context is loaded"
   sleep 20
 
-  on roles(:karaf) do
-    puts "Wait until servicemix is completely started."
-    wait_for_all_bundles (timeout=180) {|b| ["Active", "Resolved"].include? b["status"]}
+  on roles(:esb) do
+    wait_for_all_bundles (timeout=180) {|b| ["Active", "Resolved", "Installed"].include? b["status"]}
     wait_for_bundle (timeout=180) do |b| 
-      b["name"] == "Apache CXF Bundle Jar" and b["context"] == 'Started'        
+      b["name"] == "Apache CXF Bundle Jar" and b["context"] == 'Started'              
     end
-    puts "servicemix is completely started."
   end
 end
 
@@ -85,7 +102,6 @@ namespace :karaf do
   task :clean do
     karaf_stop
     invoke('karaf:startclean')
-    puts "Stop and start again"
     karaf_stop
     invoke('karaf:start')
   end
@@ -95,8 +111,9 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start clean\'')
       end
+#      wait_for_smx_to_start      
+	sleep 20
     end
-    wait_for_smx_to_start
   end
 
   task :start do
@@ -105,7 +122,8 @@ namespace :karaf do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start\'')
       end
     end
-    wait_for_smx_to_start
+#    wait_for_smx_to_start
+	sleep 20
   end
 
   task :install_eventstore do
@@ -185,5 +203,5 @@ namespace :karaf do
   end
 end
 
-before "karaf:clean", "cfengine:run"
+#before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
