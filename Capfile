@@ -111,7 +111,8 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start clean\'')
       end
-      wait_for_smx_to_start      
+#      wait_for_smx_to_start      
+      sleep 180
     end
   end
 
@@ -121,7 +122,8 @@ namespace :karaf do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start\'')
       end
     end
-    wait_for_smx_to_start
+#    wait_for_smx_to_start
+    sleep 60
   end
 
   task :install_eventstore do
