@@ -112,7 +112,7 @@ namespace :karaf do
         execute('sudo su smx-fuse -c \'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=CET -server -Xms2048m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+UseParallelOldGC -XX:+CMSClassUnloadingEnabled" /usr/share/apache-servicemix/bin/start clean\'')
       end
 #      wait_for_smx_to_start      
-	sleep 20
+	sleep 60
     end
   end
 
@@ -123,7 +123,7 @@ namespace :karaf do
       end
     end
 #    wait_for_smx_to_start
-	sleep 20
+	sleep 60
   end
 
   task :install_eventstore do
@@ -203,5 +203,5 @@ namespace :karaf do
   end
 end
 
-#before "karaf:clean", "cfengine:run"
+before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
