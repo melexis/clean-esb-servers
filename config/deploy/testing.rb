@@ -3,7 +3,7 @@ set :stage, :testing
 set :ssh_options, {
     user: 'jenkins',
     paranoid: false,
-    keys: ['/home/brh/.ssh/id_rsa_jenkins', "#{Dir.home}/.ssh/id_rsa"]
+    keys: ['id_rsa_jenkins', "#{Dir.home}/.ssh/id_rsa"]
 }
 
 role :esb, %w{esb-a-test.sensors.elex.be esb-b-test.sensors.elex.be
