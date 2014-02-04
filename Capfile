@@ -97,6 +97,10 @@ namespace :karaf do
       as "smx-fuse" do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start clean\'')
       end
+      
+      # Give karaf a chance to start
+      sleep 30 
+
       wait_for_smx_to_start      
     end
   end
