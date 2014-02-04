@@ -64,10 +64,10 @@ def wait_for_smx_to_start
   # wait so we can ssh to the smx console
   on roles(:karaf) do
   # wait until all bundles are started and spring context is loaded"
-    wait_for_all_bundles timeout=180, sleeptime=10 do 
+    wait_for_all_bundles(:timeout => 180, :sleeptime => 10) do 
       |b| ["Active", "Resolved", "Installed"].include? b["status"] 
     end
-    wait_for_bundle timeout=180, sleeptime=10 do |b| 
+    wait_for_bundle(:timeout => 180, :sleeptime => 10) do |b| 
       b["name"] == "Apache CXF Bundle Jar" and b["context"] == 'Started'              
     end
   end
