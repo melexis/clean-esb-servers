@@ -115,6 +115,7 @@ namespace :karaf do
       
       # Give karaf a chance to start
       block_till_karaf_started
+      sleep 20
       wait_for_smx_to_start      
     end
   end
@@ -205,5 +206,5 @@ namespace :karaf do
   end
 end
 
-# before "karaf:clean", "cfengine:run"
+before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
