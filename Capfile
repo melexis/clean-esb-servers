@@ -54,7 +54,8 @@ def karaf_stop (sleeptime = 10)
     as "smx-fuse" do
       execute(:stopsmx)
     end
-  end  
+  end
+  puts "Sleeping for #{sleeptime} seconds"
   sleep sleeptime
   force_stop
 end
@@ -94,6 +95,7 @@ end
 
 def block_till_everything_is_started
   block_till_karaf_started
+  puts "Sleeping for 20 seconds"
   sleep 20
   wait_for_smx_to_start      
 end
