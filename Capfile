@@ -61,7 +61,6 @@ end
 
 def wait_for_smx_to_start
   # wait so we can ssh to the smx console
-  sleep 10
   on roles(:karaf) do
   # wait until all bundles are started and spring context is loaded"
     wait_for_all_bundles timeout=180, sleeptime=10 do 
@@ -73,6 +72,22 @@ def wait_for_smx_to_start
   end
 end
 
+def karaf_started?
+  on roles(:esb) do
+    as "smx-fuse" do
+      n = capture('netstat -ao | grep 8101 | wc -l')
+      n.to_i > 0
+    end
+  end
+end
+
+def block_till_karaf_started (args={})
+  args = {:timeout => 60, :sleeptime => 1}.merge(args)
+  timeout = Time.now + args[:timeout]
+  until (karaf_started? || timeout < Time.now) do
+      sleep args[:sleeptime]
+  end
+end
 
 namespace :cfengine do
   task :run do
@@ -99,8 +114,7 @@ namespace :karaf do
       end
       
       # Give karaf a chance to start
-      sleep 30 
-
+      block_till_karaf_started
       wait_for_smx_to_start      
     end
   end
@@ -191,5 +205,5 @@ namespace :karaf do
   end
 end
 
-before "karaf:clean", "cfengine:run"
+# before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
