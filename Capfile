@@ -59,6 +59,7 @@ def karaf_stop (sleeptime = 10)
   force_stop
 end
 
+# wait_for_smx_to_start - function that blocks till all bundles are active,  and the last one is started
 def wait_for_smx_to_start
   # wait so we can ssh to the smx console
   on roles(:karaf) do
@@ -72,6 +73,7 @@ def wait_for_smx_to_start
   end
 end
 
+# karaf_started? - verify if karaf is listening to its ssh port
 def karaf_started?
   on roles(:esb) do
     as "smx-fuse" do
@@ -81,12 +83,19 @@ def karaf_started?
   end
 end
 
+# block_till_karaf_started - wait till the karaf server is listening to its ssh port
 def block_till_karaf_started (args={})
   args = {:timeout => 60, :sleeptime => 1}.merge(args)
   timeout = Time.now + args[:timeout]
   until (karaf_started? || timeout < Time.now) do
       sleep args[:sleeptime]
   end
+end
+
+def block_till_everything_is_started
+  block_till_karaf_started
+  sleep 20
+  wait_for_smx_to_start      
 end
 
 namespace :cfengine do
@@ -114,9 +123,7 @@ namespace :karaf do
       end
       
       # Give karaf a chance to start
-      block_till_karaf_started
-      sleep 20
-      wait_for_smx_to_start      
+      block_till_everything_is_started
     end
   end
 
@@ -126,7 +133,9 @@ namespace :karaf do
         execute('sudo su smx-fuse -c \'. /etc/default/smx-fuse; /usr/share/apache-servicemix/bin/start\'')
       end
     end
-    wait_for_smx_to_start
+
+    # Give karaf a chance to start
+    block_till_everything_is_started
   end
 
   task :install_eventstore do

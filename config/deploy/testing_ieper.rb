@@ -1,12 +1,12 @@
 set :stage, :testing
 
 set :ssh_options, {
-    user: 'jenkins',
-    paranoid: false
+  user: 'jenkins',
+  paranoid: false,
+  keys: ['id_rsa_jenkins', "#{Dir.home}/.ssh/id_rsa"]
 }
 
-role :esb, %w{esb-a-test.sensors.elex.be esb-b-test.sensors.elex.be 
-}
+role :esb, %w{esb-a-test.sensors.elex.be esb-b-test.sensors.elex.be}
 
 server '10.32.16.22',
     user: 'smx',
