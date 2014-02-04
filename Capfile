@@ -215,5 +215,5 @@ namespace :karaf do
   end
 end
 
-before "karaf:clean", "cfengine:run"
+# before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
