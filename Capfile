@@ -108,7 +108,19 @@ namespace :cfengine do
       end
     end
   end
+
+  task :kill do
+    # kill all cfexecd processes
+    on roles(:esb) do
+      procs = list_processes.find_all {|p| p[:command].include? "cfexecd"}
+      as "root" do
+        procs.each {|p| execute(:kill, p[:pid])}
+      end
+    end
+  end
 end
+
+before 'cfengine:run', 'cfengine:kill'
 
 namespace :karaf do 
   task :clean do
