@@ -120,8 +120,6 @@ namespace :cfengine do
   end
 end
 
-before 'cfengine:run', 'cfengine:kill'
-
 namespace :karaf do 
   task :clean do
     karaf_stop
@@ -229,5 +227,7 @@ namespace :karaf do
   end
 end
 
-# before "karaf:clean", "cfengine:run"
+
+before "cfengine:run", "cfengine:kill"
+before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
