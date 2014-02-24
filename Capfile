@@ -111,7 +111,7 @@ namespace :cfengine do
 
   task :kill do
     # kill all cfexecd processes
-    on roles(:esb) do
+    on roles(:cfengine_update) do
       procs = list_processes.find_all {|p| p[:command].include? "cfexecd"}
       as "root" do
         procs.each {|p| execute(:kill, p[:pid])}
