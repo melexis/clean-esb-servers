@@ -6,6 +6,7 @@ set :ssh_options, {
 }
 
 role :esb, %w{ewaf-test.colo.elex.be}
+role :cfengine_update, %w{ewaf-test.colo.elex.be}
 
 server '10.32.240.49',
     user: 'smx',

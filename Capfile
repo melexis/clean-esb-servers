@@ -102,7 +102,7 @@ end
 
 namespace :cfengine do
   task :run do
-    on roles(:esb) do
+    on roles(:cfengine_update) do
       as :root do
         execute(:cfagent, '-q')
       end
