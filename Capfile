@@ -108,16 +108,6 @@ namespace :cfengine do
       end
     end
   end
-
-  task :kill do
-    # kill all cfexecd processes
-    on roles(:cfengine_update) do
-      procs = list_processes.find_all {|p| p[:command].include? "cfexecd"}
-      as "root" do
-        procs.each {|p| execute(:kill, p[:pid])}
-      end
-    end
-  end
 end
 
 namespace :karaf do 
@@ -228,6 +218,5 @@ namespace :karaf do
 end
 
 
-before "cfengine:run", "cfengine:kill"
 before "karaf:clean", "cfengine:run"
 before "karaf:install_platform", "karaf:install_eventstore"
