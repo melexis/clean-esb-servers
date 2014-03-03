@@ -7,6 +7,7 @@ set :ssh_options, {
 }
 
 role :esb, %w{esb-a-test.sensors.elex.be esb-b-test.sensors.elex.be}
+role :cfengine_update, %w{esb-a-test.sensors.elex.be esb-b-test.sensors.elex.be}
 
 server '10.32.16.22',
     user: 'smx',

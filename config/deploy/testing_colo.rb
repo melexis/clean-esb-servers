@@ -5,8 +5,8 @@ set :ssh_options, {
     paranoid: false
 }
 
-role :esb, %w{esb-a-test.colo.elex.be esb-b-test.colo.elex.be 
-}
+role :esb, %w{esb-a-test.colo.elex.be esb-b-test.colo.elex.be}
+role :cfengine_update, %w{esb-a-test.colo.elex.be esb-b-test.colo.elex.be}
 
 
 server '10.32.241.116',
