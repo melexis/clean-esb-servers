@@ -6,7 +6,7 @@ SSHKit.config.command_map[:ps] = '/bin/ps'
 SSHKit.config.command_map[:kill] = 'kill -9'
 SSHKit.config.command_map[:karaf] = '/usr/share/apache-servicemix/bin/start'
 SSHKit.config.command_map[:stopsmx] = '/usr/share/apache-servicemix/bin/stop; true;'
-SSHKit.config.command_map[:cfagent] = '/usr/sbin/cfagent'
+SSHKit.config.command_map[:cfagent] = 'sudo /usr/sbin/cfagent'
 SSHKit.config.command_map[:tail_100] = '/usr/bin/tail -100 /usr/share/apache-servicemix/data/log/server.log'
 
 
