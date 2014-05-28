@@ -38,7 +38,7 @@ def force_stop
       karaf_procs = procs.find_all { |p| p[:command].include? "karaf" }
       karaf_procs.each do |p|
         as "smx-fuse" do
-          execute("sh -c 'kill #{p[:pid]} || /bin/true'")
+          execute("sudo sh -c 'kill #{p[:pid]} || /bin/true'")
         end
       end
     rescue Exception => e
