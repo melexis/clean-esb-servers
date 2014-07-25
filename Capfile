@@ -71,7 +71,7 @@ def wait_for_smx_to_start
     wait_for_all_bundles(:timeout => 180, :sleeptime => 10) do 
       |b| ["Active", "Resolved", "Installed"].include? b[:status] 
     end
-    wait_for_bundle(:timeout => 300, :sleeptime => 10) do |b| 
+    wait_for_bundle(:timeout => 500, :sleeptime => 10) do |b| 
       b[:name] == "Apache CXF Bundle Jar" and b[:context] == 'Started'              
     end
   end
