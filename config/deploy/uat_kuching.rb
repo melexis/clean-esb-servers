@@ -9,7 +9,7 @@ role :esb, %w{esb-a-uat.kuching.elex.be esb-b-uat.kuching.elex.be
 }
 
 
-server '10.60.112.35',
+server 'esb-a-uat.kuching.elex.be',
     user: 'smx',
     roles: %{karaf},
     ssh_options:
@@ -20,7 +20,7 @@ server '10.60.112.35',
         }
 
 
-server '10.60.112.34',
+server 'esb-b-uat.kuching.elex.be',
     user: 'smx',
     roles: %{karaf},
     ssh_options:
