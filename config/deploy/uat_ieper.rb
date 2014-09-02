@@ -9,7 +9,7 @@ set :ssh_options, {
 role :esb, %w{esb-a-uat.sensors.elex.be esb-b-uat.sensors.elex.be}
 role :cfengine_update, %w{esb-a-uat.sensors.elex.be esb-b-uat.sensors.elex.be}
 
-server '10.32.16.22',
+server '10.32.16.154',
     user: 'smx',
     roles: %{karaf},
     ssh_options:
@@ -20,7 +20,7 @@ server '10.32.16.22',
         }
 
 
-server '10.32.16.23',
+server '10.32.16.155',
     user: 'smx',
     roles: %{karaf},
     ssh_options:

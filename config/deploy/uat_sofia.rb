@@ -9,7 +9,7 @@ role :esb, %w{esb-a-uat.sofia.elex.be esb-b-uat.sofia.elex.be}
 role :cfengine_update, %w{esb-a-uat.sofia.elex.be esb-b-uat.sofia.elex.be}
 
 
-server '10.35.80.155',
+server '10.35.80.217',
     user: 'smx',
     roles: %{karaf},
     ssh_options:
@@ -20,7 +20,7 @@ server '10.35.80.155',
         }
 
 
-server '10.35.80.156',
+server '10.35.80.218',
     user: 'smx',
     roles: %{karaf},
     ssh_options:

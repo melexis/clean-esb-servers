@@ -8,7 +8,6 @@ set :ssh_options, {
 role :esb, %w{esb-a-uat.colo.elex.be esb-b-uat.colo.elex.be}
 role :cfengine_update, %w{esb-a-uat.colo.elex.be esb-b-uat.colo.elex.be}
 
-
 server '10.32.241.197',
     user: 'smx',
     roles: %{karaf},
