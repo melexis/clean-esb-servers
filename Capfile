@@ -141,6 +141,10 @@ namespace :karaf do
     block_till_everything_is_started
   end
 
+  task :stop do
+    karaf_stop
+  end
+
   task :install_eventstore do
     on roles(:karaf) do
       begin
