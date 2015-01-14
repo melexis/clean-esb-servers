@@ -89,11 +89,13 @@ end
 
 # block_till_karaf_started - wait till the karaf server is listening to its ssh port
 def block_till_karaf_started (args={})
-  args = {:timeout => 60, :sleeptime => 1}.merge(args)
+  args = {:timeout => 120, :sleeptime => 1}.merge(args)
   timeout = Time.now + args[:timeout]
   until (karaf_started? || timeout < Time.now) do
       sleep args[:sleeptime]
   end
+
+  raise "Karaf didn\' start within #{args[:timeout]} seconds." unless karaf_started?
 end
 
 def block_till_everything_is_started
